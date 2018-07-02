@@ -23,33 +23,7 @@ func main() {
 	flag.Parse()
 
 	problems := readProblemsFromCsv(*problemsFileFlag)
-
-	var numCorrect, numIncorrect int = 0, 0
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Quiz Master")
-	fmt.Printf("There are %d problems in the quiz.  Ready? (Y/N) ", len(problems))
-	response, _ := reader.ReadString('\n')
-	if start := strings.TrimSpace(response); strings.EqualFold("Y", start) {
-		fmt.Println("Ok, let's do this!")
-		for i, problem := range problems {
-			fmt.Println("----------------------------------------------------")
-			fmt.Printf("%d: %s\n", i, problem.Text)
-			response, _ := reader.ReadString('\n')
-			if answer := strings.TrimSpace(response); strings.EqualFold(answer, problem.Answer) {
-				numCorrect++
-				fmt.Println("Correct")
-			} else {
-				numIncorrect++
-				fmt.Println("Incorrect")
-			}
-		}
-		fmt.Println("----------------------------------------------------")
-		fmt.Println("Finished!  Summary:")
-		fmt.Printf("You got %d Correct and %d Incorrect (%v%%)\n", numCorrect, numIncorrect, math.Round(float64(numCorrect)/float64(len(problems))*100))
-		fmt.Println("----------------------------------------------------")
-	} else {
-		fmt.Printf("Ok, maybe later! (You typed '%s' rather than 'Y')", start)
-	}
+	doQuiz(problems)
 }
 
 func readProblemsFromCsv(filename string) []problem {
@@ -72,4 +46,33 @@ func readProblemsFromCsv(filename string) []problem {
 		// fmt.Println(string(problemsJSON))
 	}
 	return problems
+}
+
+func doQuiz(problems []problem) {
+	var numCorrect, numIncorrect int = 0, 0
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Quiz Master")
+	fmt.Printf("There are %d problems in the quiz.  Ready? (Y/N) ", len(problems))
+	response, _ := reader.ReadString('\n')
+	if start := strings.TrimSpace(response); strings.EqualFold("Y", start) {
+		fmt.Println("Ok, let's do this!")
+		for i, problem := range problems {
+			fmt.Println("----------------------------------------------------")
+			fmt.Printf("%d: %s\n", i, problem.Text)
+			response, _ := reader.ReadString('\n')
+			if answer := strings.TrimSpace(response); strings.EqualFold(answer, problem.Answer) {
+				numCorrect++
+				fmt.Println("Correct")
+			} else {
+				numIncorrect++
+				fmt.Printf("Incorrect, should be: %s\n", problem.Answer)
+			}
+		}
+		fmt.Println("----------------------------------------------------")
+		fmt.Println("Finished!  Summary:")
+		fmt.Printf("You got %d Correct and %d Incorrect (%v%%)\n", numCorrect, numIncorrect, math.Round(float64(numCorrect)/float64(len(problems))*100))
+		fmt.Println("----------------------------------------------------")
+	} else {
+		fmt.Printf("Ok, maybe later! (You typed '%s' rather than 'Y')", start)
+	}
 }
