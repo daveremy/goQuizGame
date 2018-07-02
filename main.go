@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"math"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -22,9 +23,16 @@ func main() {
 	// Handle command line options
 	problemsFileFlag := flag.String("problemsFile", "problems.csv", "Problems File Name")
 	timeLimitFlag := flag.Int("timeLimit", 30, "the time limit for the quiz in seconds")
+	shuffleFlag := flag.Bool("shuffle", true, "shuffle the quiz questions")
 	flag.Parse()
 
 	problems := readProblemsFromCsv(*problemsFileFlag)
+	if *shuffleFlag {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(problems), func(i, j int) {
+			problems[i], problems[j] = problems[j], problems[i]
+		})
+	}
 	doQuiz(problems, *timeLimitFlag)
 }
 
